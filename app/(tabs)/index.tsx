@@ -1,15 +1,33 @@
+import React from 'react';
+import { AppRegistry } from 'react-native';
+import App from '../App';
+import { expo as appConfig } from '../../app.json';
 import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
+import { NativeBaseProvider, Button, Heading } from 'native-base';
 import { Text, View } from '@/components/Themed';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
-export default function TabOneScreen() {
+const appName = appConfig.name;
+AppRegistry.registerComponent(appName, () => App);
+
+export default function HomeScreen() {
+  const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+    <NativeBaseProvider>
+      <View style={styles.container}>
+        <Heading size='4xl' fontSize={50} style={styles.title}>
+          Pokédex
+        </Heading>
+        <View lightColor='#eee' darkColor='rgba(255,255,255,0.1)' />
+        <Button
+          style={styles.button}
+          variant='subtle'
+          onPress={() => navigation.navigate('PokeGrid')}
+        >
+          Empezar
+        </Button>
+      </View>
+    </NativeBaseProvider>
   );
 }
 
@@ -18,14 +36,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#020629',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#fff',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  button: {
+    marginTop: 20,
   },
 });
