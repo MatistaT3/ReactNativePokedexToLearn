@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FlatList,
   Box,
@@ -16,18 +16,29 @@ interface RenderPokeGridProps {
 
 const RenderPokeGrid: React.FC<RenderPokeGridProps> = ({ pokemon }) => {
   const [pokemonList, setPokemonList] = React.useState<any[]>([]);
-  React.useEffect(() => {
-    const updatedPokemonList = pokemon
-      ? pokemon
-          .filter((pokemon: any) => pokemon.id <= 1025)
-          .map((pokemon: any) => ({
-            id: pokemon.id,
-            name: pokemon.name,
-            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
-          }))
-      : [];
-    setPokemonList(updatedPokemonList);
-  }, [pokemon]);
+  const [page, setPage] = React.useState<number>(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    loadMorePokemon();
+  }, [pokemon, page]);
+
+  const loadMorePokemon = () => {
+    const newPokemon = pokemon
+      .slice(0, page * itemsPerPage)
+      .map((pokemon: any) => ({
+        id: pokemon.id,
+        name: pokemon.name,
+        img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
+      }));
+    setPokemonList(newPokemon);
+  };
+
+  const handleLoadMore = () => {
+    if (page * itemsPerPage < pokemon.length) {
+      setPage(page + 1);
+    }
+  };
 
   return (
     <Box width='100%' bg='#020629'>
@@ -75,6 +86,8 @@ const RenderPokeGrid: React.FC<RenderPokeGridProps> = ({ pokemon }) => {
           </Box>
         )}
         keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
       />
     </Box>
   );

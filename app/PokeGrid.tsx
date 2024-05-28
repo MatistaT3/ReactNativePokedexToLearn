@@ -14,40 +14,10 @@ import RenderPokeGrid from '@/components/RenderPokeGrid';
 import FilterPokeList from '@/components/FilterPokeList';
 
 export default function PokeGrid() {
-  const [pokemonDataLimited, setPokemonDataLimited] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [allPokemonData, setAllPokemonData] = useState<any[]>([]);
   const [filteredPokemonData, setFilteredPokemonData] = useState<any[]>([]);
   const [filterActive, setFilterActive] = useState<boolean>(false);
-
-  const fetchLimitedPokemonData = async (limit = 30) => {
-    const baseUrl = 'https://pokeapi.co/api/v2/';
-    const offset = (currentPage - 1) * limit;
-
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${baseUrl}pokemon?limit=${limit}&offset=${offset}`
-      );
-      const data = response.data.results;
-
-      const promises = data.map(async (pokemon: any) => {
-        const response = await axios.get(pokemon.url);
-        return response.data;
-      });
-      const allPokemonLimitedData = await Promise.all(promises);
-      setPokemonDataLimited(allPokemonLimitedData);
-    } catch (error) {
-      console.error('Error fetching limited pokemon data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLimitedPokemonData();
-  }, [currentPage]);
 
   const fetchallPokemonData = useCallback(async () => {
     const baseUrl = 'https://pokeapi.co/api/v2/';
@@ -105,9 +75,7 @@ export default function PokeGrid() {
           ) : (
             <View>
               <RenderPokeGrid
-                pokemon={
-                  filterActive ? filteredPokemonData : pokemonDataLimited
-                }
+                pokemon={filterActive ? filteredPokemonData : allPokemonData}
               />
             </View>
           )}
